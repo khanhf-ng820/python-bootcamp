@@ -14,4 +14,4 @@ def by_day(courses: list[tuple[str, str]]) -> dict[str, list[str]]:
     for day, courses_on_day in result.items():
         courses_on_day.sort()
 
-    return result 
+    return result

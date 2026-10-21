@@ -26,12 +26,14 @@ def load_tasks(path: str) -> list[Task]:
 def save_json(tasks: list[Task], path) -> None:
     data = []
     for task in tasks:
-        data.append({
-            "title": task.title,
-            "importance": task.importance,
-            "effort_h": task.effort_h,
-            "deadline": task.deadline.isoformat(),
-        })
+        data.append(
+            {
+                "title": task.title,
+                "importance": task.importance,
+                "effort_h": task.effort_h,
+                "deadline": task.deadline.isoformat(),
+            }
+        )
 
     with open(path, mode="w", encoding="utf-8") as file:
         json.dump(data, file, indent=2)
