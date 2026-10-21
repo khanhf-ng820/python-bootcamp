@@ -7,7 +7,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from members.khanh_np.w1 import grades, rules, text_tools, timetable, translate  # noqa: E402
+from members.phat_dx.w1 import grades, rules, text_tools, timetable, translate
 
 
 # --- W1-1: grades.summary -------------------------------------------------
