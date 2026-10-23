@@ -16,6 +16,5 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Course documents and reference images
-*.pdf
+# Reference images
 members.png
