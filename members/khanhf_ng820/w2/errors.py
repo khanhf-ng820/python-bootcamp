@@ -1,4 +1,4 @@
-from members.khanh_np.w2.models import Task
+from members.khanhf_ng820.w2.models import Task
 
 
 class InfeasiblePlan(Exception):

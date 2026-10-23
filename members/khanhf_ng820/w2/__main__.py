@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 
-from members.khanh_np.w2.io_utils import load_tasks
+from members.khanhf_ng820.w2.io_utils import load_tasks
 
 
 def main() -> None:

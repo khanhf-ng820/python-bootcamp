@@ -3,7 +3,7 @@ import json
 from datetime import date
 from pathlib import Path
 
-from members.khanh_np.w2.models import Task
+from members.khanhf_ng820.w2.models import Task
 
 
 def load_tasks(path: str | Path) -> list[Task]:
