@@ -6,6 +6,7 @@ from datetime import date
 from pathlib import Path
 
 from members.KaKaAkagami.w2.io_utils import load_tasks
+from shared.study_planner.allocate import allocate
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -32,9 +33,20 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Study Planner - {args.today.isoformat()}")
     print(f"Available hours: {args.hours:g}")
 
+    try:
+        blocks = allocate(tasks, args.hours)
+    except ValueError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        return 1
+
+    allocated_hours = {id(block.task): block.hours for block in blocks}
+
     for task in tasks:
+        hours = allocated_hours.get(id(task), 0.0)
+
         print(
-            f"- {task.title}: {task.effort_h:g}h, "
+            f"- {task.title}: allocated {hours:g}h / "
+            f"required {task.effort_h:g}h, "
             f"importance={task.importance}, deadline={task.deadline}"
         )
 
