@@ -17,7 +17,6 @@ def analyse(pairs: list[tuple[str, float]]) -> dict:
     }
 
     p95 = {}
-    averages = {}
 
     for intent, latencies in grouped.items():
         ordered = sorted(latencies)
@@ -26,9 +25,8 @@ def analyse(pairs: list[tuple[str, float]]) -> dict:
         index = ceil(0.95 * len(ordered)) - 1
         p95[intent] = ordered[index]
 
-        averages[intent] = sum(latencies) / len(latencies)
 
-    slowest = max(averages, key=lambda intent: averages[intent]) if averages else None
+    slowest = max(p95, key=lambda intent: p95[intent]) if p95 else None
 
     return {
         "counts": counts,
