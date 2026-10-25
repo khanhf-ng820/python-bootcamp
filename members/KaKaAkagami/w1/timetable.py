@@ -1,3 +1,5 @@
+"""Utilities for managing timetables."""
+
 def by_day(entries: list[tuple[str, str]]) -> dict[str, list[str]]:
     """Group courses by day and sort them alphabetically."""
     timetable = {}
