@@ -27,7 +27,8 @@ def test_cli_with_sample_csv() -> None:
     """The CLI should process the sample CSV successfully."""
     result = run_cli(
         str(ROOT / "samples" / "tasks.csv"),
-        "--hours", "8",
+        "--hours",
+        "8",
     )
 
     assert result.returncode == 0
@@ -39,7 +40,8 @@ def test_cli_missing_csv() -> None:
     """A missing input file should produce a clean error."""
     result = run_cli(
         str(ROOT / "samples" / "missing.csv"),
-        "--hours", "2",
+        "--hours",
+        "2",
     )
 
     assert result.returncode == 1
@@ -50,8 +52,7 @@ def test_cli_invalid_csv(tmp_path: Path) -> None:
     """Invalid CSV data should be rejected without a traceback."""
     csv_path = tmp_path / "invalid.csv"
     csv_path.write_text(
-        "title,importance,effort_h,deadline\n"
-        "Bad task,invalid,2,2026-10-30\n",
+        "title,importance,effort_h,deadline\nBad task,invalid,2,2026-10-30\n",
         encoding="utf-8",
     )
 
@@ -77,7 +78,8 @@ def test_cli_invalid_hours(hours: str) -> None:
     """Negative or nonnumeric study hours should be rejected."""
     result = run_cli(
         str(ROOT / "samples" / "tasks.csv"),
-        "--hours", hours,
+        "--hours",
+        hours,
     )
 
     assert result.returncode != 0
