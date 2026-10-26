@@ -1,3 +1,5 @@
+"""Task model for the W2 study planner."""
+
 import math
 from dataclasses import dataclass
 from datetime import date
@@ -13,6 +15,7 @@ class Task:
     deadline: date
 
     def __post_init__(self) -> None:
+        """Validate the task fields after construction."""
         # Title must be a non-empty string
         if not isinstance(self.title, str):
             raise TypeError("title must be a string")
@@ -38,6 +41,7 @@ class Task:
             raise TypeError("deadline must be a date")
 
     def days_left(self, today: date) -> int:
+        """Return days until the deadline, never negative."""
         # Calculate the remaining days
         delta = self.deadline - today
         # Return days left, or 0 if it is overdue
