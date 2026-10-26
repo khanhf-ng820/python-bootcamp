@@ -1,7 +1,7 @@
 """Count words and select the most frequent words in a text."""
 
 
-def word_count(text: str) -> dict:
+def word_count(text: str) -> dict[str, int]:
     """Return a dictionary mapping normalized words to their counts.
 
     Lowercase the text, remove the listed punctuation, and split it on
@@ -11,12 +11,14 @@ def word_count(text: str) -> dict:
     text = text.lower()
     text = text.translate(text.maketrans("", "", ".,!;:"))
     words = text.split()
-    counts = {}
+    counts: dict[str, int] = {}
     for word in words:
-        if word not in counts :
+        if word not in counts:
             counts[word] = 1
-        else: counts[word] += 1
+        else:
+            counts[word] += 1
     return counts
+
 
 def top_k(text: str, k: int) -> list[tuple[str, int]]:
     """Return up to k words, ordered by frequency and then alphabetically.
@@ -26,5 +28,5 @@ def top_k(text: str, k: int) -> list[tuple[str, int]]:
     """
     counts = word_count(text)
     items = list(counts.items())
-    items.sort(key = lambda item: (-item[1], item[0]))
+    items.sort(key=lambda item: (-item[1], item[0]))
     return items[:k]
