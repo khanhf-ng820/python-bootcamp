@@ -1,8 +1,13 @@
+"""Errors and feasibility checks for the W2 study planner."""
+
 from .models import Task
 
 
 class InfeasiblePlan(Exception):
+    """Raised when the tasks need more hours than are available."""
+
     def __init__(self, needed_h: float, available_h: float) -> None:
+        """Store the needed and available hours."""
         # Keep the arguments on the exception for logging/debugging
         super().__init__(needed_h, available_h)
         # Store the needed and available hours
@@ -10,11 +15,13 @@ class InfeasiblePlan(Exception):
         self.available_h = available_h
 
     def __str__(self) -> str:
+        """Return a human-readable explanation of the shortfall."""
         # Define the error message to display
         return f"Need {self.needed_h} hours, but only have {self.available_h} hours."
 
 
 def check_feasible(tasks: list[Task], available_h: float) -> None:
+    """Raise ``InfeasiblePlan`` when the tasks exceed ``available_h``."""
     # Calculate the total needed hours for all tasks
     total_needed = sum(task.effort_h for task in tasks)
 
