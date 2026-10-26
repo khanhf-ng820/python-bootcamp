@@ -2,7 +2,6 @@
 
 from datetime import date, timedelta
 
-
 WEEKDAYS = {
     "mon": 0,
     "tue": 1,
