@@ -1,6 +1,7 @@
-# Merge 2 sorted vectors into a single sorted vector
+"""W1-4: Merge two sorted lists using the original merge_sort entrypoint."""
 
-def merge_sort(a, b):
+
+def merge_sort(a: list[int], b: list[int]) -> list[int]:
     """Merge sorted lists without C++ vector type declarations."""
     i = 0
     j = 0
@@ -14,11 +15,11 @@ def merge_sort(a, b):
             ans.append(b[j])
             j += 1
 
-    while (i < len(a)):
+    while i < len(a):
         ans.append(a[i])
         i += 1
 
-    while (j < len(b)):
+    while j < len(b):
         ans.append(b[j])
         j += 1
 

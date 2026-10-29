@@ -1,4 +1,8 @@
-def by_day(vec : list[tuple[str, str]]):
+"""W1 timetable grouping."""
+
+
+def by_day(vec: list[tuple[str, str]]) -> dict[str, list[str]]:
+    """Group course codes by day and sort the codes within each day."""
     grouped = {}
 
     for course in vec:
