@@ -1,14 +1,14 @@
 # Study Planner CLI (`shared.study_planner`)
 
-`shared.study_planner` là gói CLI và thư viện Python phục vụ việc quản lý, sắp xếp thứ tự ưu tiên và phân bổ quỹ thời gian học tập tự động cho sinh viên. 
+`shared.study_planner` is a modular Python CLI application and library designed to parse study tasks, prioritize deadlines, and greedily allocate available study hours into balanced blocks.
 
-Dự án được phát triển và tích hợp bởi **Team T-W3** (CSC10014 — Python Bootcamp).
+Developed and integrated by **Team T-W3** for the CSC10014 — Python Bootcamp course.
 
 ---
 
-## 1. Tổng quan & Kiến trúc Pipeline
+## 1. Overview & Pipeline Architecture
 
-Công cụ kết nối các module độc lập do các thành viên trong nhóm xây dựng thành một pipeline xử lý dữ liệu hoàn chỉnh từ đầu vào CSV đến kết quả trực quan:
+The application connects decoupled modules developed by team members into an end-to-end data processing pipeline from CSV input to formatted outputs:
 
 ```text
                ┌───────────────────────────────┐
@@ -35,46 +35,46 @@ Công cụ kết nối các module độc lập do các thành viên trong nhóm
           ▼                   ▼                   ▼
 ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
 │  render (stdout) │ │  export (--output│ │  stats (--stats) │
-│  Bảng ASCII trực │ │  Xuất file JSON  │ │  Thống kê Counter│
-│  quan trên CLI   │ │  hoặc Markdown   │ │  & defaultdict   │
+│  ASCII table     │ │  Export to JSON  │ │  Counter &       │
+│  in terminal     │ │  or Markdown     │ │  defaultdict     │
 └──────────────────┘ └──────────────────┘ └──────────────────┘
 ```
 
-### Các bước trong pipeline:
-1. **`parse_csv(path)`**: Đọc file CSV, chuyển đổi từng dòng thành đối tượng `Task`.
-2. **`validate_tasks(tasks)`**: Kiểm tra tính hợp lệ của dữ liệu (điểm quan trọng `1-5`, thời lượng học `> 0`).
-3. **`prioritise(tasks, today=None)`**: Tính điểm ưu tiên dựa trên `importance` và số ngày còn lại đến `deadline`.
-4. **`allocate(tasks, available_hours)`**: Thuật toán tham lam (Greedy) phân bổ thời gian học thành các `Block` theo thứ tự ưu tiên.
-5. **Đầu ra**:
-   - Mặc định: `render(blocks)` in bảng lịch học ra terminal.
-   - Khi có cờ `--output`: `export_plan(blocks, path, ...)` lưu file `.json` hoặc `.md`.
-   - Khi có cờ `--stats`: `format_stats(blocks)` hiển thị thống kê chi tiết theo cấp độ quan trọng và công việc chiếm nhiều giờ nhất.
+### Pipeline Stages:
+1. **`parse_csv(path)`**: Reads the CSV file and maps rows into `Task` dataclass instances.
+2. **`validate_tasks(tasks)`**: Validates task constraints (importance `1` to `5`, effort `> 0`).
+3. **`prioritise(tasks, today=None)`**: Ranks tasks based on importance and remaining days to deadline.
+4. **`allocate(tasks, available_hours)`**: Greedily schedules study hours into `Block` items according to priority order.
+5. **Output Handlers**:
+   - **Terminal (Default)**: `render(blocks)` prints an aligned ASCII study schedule to stdout.
+   - **File Export (`--output`)**: `export_plan(blocks, path, ...)` saves the plan to `.json` or `.md`.
+   - **Statistics (`--stats`)**: `format_stats(blocks)` provides metric breakdowns aggregated via `Counter` and `defaultdict`.
 
 ---
 
-## 2. Cài đặt & Yêu cầu môi trường
+## 2. Requirements & Environment
 
-- **Python**: Phiên bản 3.10 trở lên.
-- **Thư viện phụ thuộc**: Sử dụng hoàn toàn thư viện chuẩn của Python (`argparse`, `csv`, `datetime`, `json`, `collections`, `dataclasses`, `pathlib`).
-- Kiểm tra môi trường:
+- **Python**: Version 3.10 or higher.
+- **Dependencies**: 100% Python Standard Library (`argparse`, `csv`, `datetime`, `json`, `collections`, `dataclasses`, `pathlib`).
+- Check your environment:
   ```bash
   python --version
   ```
 
 ---
 
-## 3. Cấu trúc dữ liệu đầu vào (Input CSV Format)
+## 3. Input CSV Specification
 
-File CSV chứa danh sách công việc cần học phải tuân theo cấu trúc gồm 4 cột bắt buộc:
+The input tasks CSV file must include the following 4 required columns with header:
 
-| Cột | Kiểu dữ liệu | Ràng buộc | Mô tả |
+| Column | Type | Constraints | Description |
 | :--- | :--- | :--- | :--- |
-| `title` | `str` | Không được rỗng | Tên môn học hoặc nhiệm vụ |
-| `importance` | `int` | Giá trị nguyên từ `1` đến `5` | Mức độ quan trọng (5 là cao nhất) |
-| `effort_h` | `float` | Số thực `> 0` | Số giờ học dự kiến cần thiết |
-| `deadline` | `str` | Định dạng chuẩn `YYYY-MM-DD` | Hạn chót hoàn thành nhiệm vụ |
+| `title` | `str` | Non-empty | Course or assignment title |
+| `importance` | `int` | Integer from `1` to `5` | Priority rating (5 is highest) |
+| `effort_h` | `float` | Real number `> 0` | Estimated hours needed to complete |
+| `deadline` | `str` | ISO format `YYYY-MM-DD` | Due date of the task |
 
-### Ví dụ file mẫu (`samples/tasks.csv`):
+### Example Input (`samples/tasks.csv`):
 ```csv
 title,importance,effort_h,deadline
 DS exam,5,6.0,2026-10-30
@@ -84,34 +84,34 @@ Linear Algebra Quiz,3,2.0,2026-11-02
 
 ---
 
-## 4. Hướng dẫn sử dụng CLI
+## 4. CLI Usage & Arguments
 
-Module được thực thi trực tiếp từ thư mục gốc của repository bằng câu lệnh:
+Execute the module directly from the repository root:
 
 ```bash
 python -m shared.study_planner <csv_path> --hours <HOURS> [options]
 ```
 
-### Bảng tham số & cờ tùy chọn (CLI Arguments & Flags)
+### Options & Flags Reference
 
-| Tham số / Flag | Bắt buộc | Mặc định | Mô tả |
+| Argument / Flag | Required | Default | Description |
 | :--- | :---: | :---: | :--- |
-| `csv_path` | Có | *(Không)* | Đường dẫn tới file CSV chứa danh sách tasks (ví dụ: `samples/tasks.csv`). |
-| `--hours <float>` | **Có** | *(Không)* | Tổng số giờ học có thể phân bổ (phải là số thực dương). |
-| `--today <YYYY-MM-DD>` | Không | Ngày hiện tại | Ngày mốc để tính độ khẩn cấp của deadline. |
-| `--output <path>` | Không | `None` | Đường dẫn file để xuất kế hoạch. Định dạng tự động nhận diện theo đuôi `.json`, `.md` hoặc `.markdown`. |
-| `--stats` | Không | `False` | Bật thống kê tổng hợp (tổng giờ, số block, tỷ lệ theo importance, top task). |
+| `csv_path` | **Yes** | *(None)* | Path to tasks CSV file (e.g. `samples/tasks.csv`). |
+| `--hours <float>` | **Yes** | *(None)* | Total available study hours to allocate (must be positive). |
+| `--today <YYYY-MM-DD>` | No | Current date | Reference date used to calculate urgency and days left. |
+| `--output <path>` | No | `None` | Output destination file. Format is inferred from `.json`, `.md`, or `.markdown`. |
+| `--stats` | No | `False` | Show aggregated allocation statistics (hours, blocks, shares, top task). |
 
 ---
 
-## 5. Các kịch bản sử dụng phổ biến
+## 5. Common Usage Scenarios
 
-### 5.1. Phân bổ cơ bản hiển thị ra màn hình
-Phân bổ 8 giờ học cho danh sách tasks:
+### 5.1. Basic Allocation (Standard Output)
+Allocate 8 study hours and print the schedule:
 ```bash
 python -m shared.study_planner samples/tasks.csv --hours 8
 ```
-**Kết quả mẫu trên terminal:**
+**Sample Output:**
 ```text
 === Study Plan ===
 Available hours: 8.00 h
@@ -121,18 +121,18 @@ Total allocated: 7.50 h
 #2 | Assignment          | 1.50 h | Imp: 4 | Due: 2026-10-27
 ```
 
-### 5.2. Chỉ định ngày mốc (`--today`)
-Đánh giá độ ưu tiên với ngày mốc cố định:
+### 5.2. Reference Date Flag (`--today`)
+Prioritize tasks relative to a custom baseline date:
 ```bash
 python -m shared.study_planner samples/tasks_extended.csv --hours 10 --today 2026-10-28
 ```
 
-### 5.3. Xem thống kê phân bổ (`--stats`)
-Hiển thị phân tích cơ cấu giờ học theo từng mức độ quan trọng:
+### 5.3. Display Allocation Statistics (`--stats`)
+View metric aggregation across importance levels:
 ```bash
 python -m shared.study_planner samples/tasks_extended.csv --hours 12 --stats
 ```
-**Đoạn thống kê bổ sung:**
+**Sample Statistics Block:**
 ```text
 Study Plan Statistics:
   - Total Allocated: 12.0 h across 4 block(s)
@@ -142,11 +142,11 @@ Study Plan Statistics:
     * Level 4: 2.0 h (16.7%) - 2 block(s)
 ```
 
-### 5.4. Xuất kế hoạch ra file Markdown (`--output plan.md`)
+### 5.4. Export Plan to Markdown (`--output plan.md`)
 ```bash
 python -m shared.study_planner samples/tasks.csv --hours 6 --output output/my_plan.md
 ```
-Tự động tạo thư mục `output/` nếu chưa có và xuất bảng Markdown:
+Automatically generates parent folders and writes standard Markdown:
 ```markdown
 # Study Plan
 
@@ -157,11 +157,11 @@ Total allocated: **6 h** across **2** block(s).
 | 1 | DS exam | 5 | 2026-10-30 | 6 | 6 |
 ```
 
-### 5.5. Xuất kế hoạch ra file JSON (`--output plan.json`)
+### 5.5. Export Plan to JSON (`--output plan.json`)
 ```bash
 python -m shared.study_planner samples/tasks.csv --hours 6 --output output/my_plan.json
 ```
-Nội dung file JSON:
+JSON file structure:
 ```json
 {
   "total_hours": 6.0,
@@ -181,24 +181,24 @@ Nội dung file JSON:
 
 ---
 
-## 6. Xử lý lỗi & Mã thoát (Exit Codes)
+## 6. Error Handling & Exit Codes
 
-Hệ thống được thiết kế bắt lỗi chặt chẽ, không in traceback ra màn hình người dùng cuối, trả về exit code sạch:
+All errors are handled gracefully without exposing Python tracebacks to end users:
 
-| Mã thoát (Exit Code) | Nguyên nhân | Thông báo mẫu |
+| Exit Code | Condition | Sample Error Output |
 | :---: | :--- | :--- |
-| `0` | Chạy thành công | Bảng lịch học hoặc thông báo xuất file thành công. |
-| `1` | Không tìm thấy file đầu vào | `Error: File not found: samples/missing.csv` |
-| `1` | File CSV rỗng | `Error: Input CSV file is empty` |
-| `1` | Dữ liệu CSV không đúng định dạng | `Error: Invalid task row: invalid literal for int() ...` |
-| `1` | Giá trị `--hours` không hợp lệ | `Error: Study hours must be positive, got: -2` |
-| `1` | Kế hoạch bất khả thi (`InfeasiblePlan`) | `Error: Infeasible study plan: total mandatory effort exceeds available hours` |
+| `0` | Success | Rendered plan table or confirmation message. |
+| `1` | Missing input file | `Error: File not found: samples/missing.csv` |
+| `1` | Empty CSV file | `Error: Input CSV file is empty` |
+| `1` | Malformed CSV data | `Error: Invalid task row: invalid literal for int() ...` |
+| `1` | Invalid study hours | `Error: Study hours must be positive, got: -2` |
+| `1` | Infeasible plan | `Error: Infeasible study plan: total mandatory effort exceeds available hours` |
 
 ---
 
-## 7. Sử dụng như thư viện Python (Library API)
+## 7. Python Library API
 
-Các module trong `shared.study_planner` có thể được import độc lập trong code Python:
+All internal modules can be imported and utilized directly in Python applications:
 
 ```python
 from datetime import date
@@ -209,36 +209,35 @@ from shared.study_planner.render import render
 from shared.study_planner.export import export_plan
 from shared.study_planner.stats import calculate_stats
 
-# 1. Đọc và lọc tasks
+# 1. Parse and validate input tasks
 tasks = parse_csv("samples/tasks.csv")
 
-# 2. Sắp xếp thứ tự ưu tiên
+# 2. Prioritize tasks
 ranked_tasks = prioritise(tasks, today=date(2026, 10, 26))
 
-# 3. Phân bổ giờ học
+# 3. Allocate study blocks
 blocks = allocate(ranked_tasks, available_hours=8.0)
 
-# 4. In trực quan
+# 4. Render to terminal
 print(render(blocks))
 
-# 5. Xuất file
+# 5. Export to file
 export_plan(blocks, "output/plan.json")
 
-# 6. Thống kê
+# 6. Aggregate statistics
 stats = calculate_stats(blocks)
 print(f"Top task: {stats['top_task']}")
 ```
 
 ---
 
-## 8. Bảng phân công thành viên Team T-W3
+## 8. Team T-W3 Member Roles
 
-| STT | Họ và tên | MSSV | Vai trò | Module đảm nhận | Nhiệm vụ chính |
+| # | Name | Student ID | Role | Target Module | Key Responsibility |
 | :---: | :--- | :---: | :--- | :--- | :--- |
-| 1 | Nguyễn Phúc Khánh | 25125086 | Tech Lead | `shared/study_planner/__main__.py` | CLI argparse, xâu chuỗi pipeline, điều phối merge và gắn tag `py-w3-done`. |
-| 2 | Trần Thành Lợi | 25125059 | Developer | `shared/study_planner/export.py` | Hàm `export_plan` xuất kết quả ra file JSON/Markdown qua cờ `--output`. |
-| 3 | Lý Tuấn Kiệt | 25125022 | Presenter, Dev | `shared/study_planner/README.md`, `docs/demo.md` | Hướng dẫn sử dụng CLI, chuẩn hóa dataset mẫu `samples/`, tài liệu demo. |
-| 4 | Nguyễn Minh Khang | 25125018 | QA/QC, Presenter | `tests/test_study_planner_e2e.py` | Bộ kiểm thử End-to-End với sample CSV, kiểm thử CI. |
-| 5 | Trần Phúc Khánh | 25125020 | Security & Data | `shared/study_planner/errors.py` | Bắt lỗi file thiếu/rỗng, xử lý `InfeasiblePlan`, trả exit code 1 sạch. |
-| 6 | Đặng Xuân Phát | 25125062 | UI/UX, QA/QC | `shared/study_planner/stats.py` | Thống kê phân bổ giờ học bằng `Counter`/`defaultdict` qua cờ `--stats`. |
-
+| 1 | Nguyễn Phúc Khánh | 25125086 | Tech Lead | `shared/study_planner/__main__.py` | CLI argparse, pipeline integration, merge coordination & release tagging. |
+| 2 | Trần Thành Lợi | 25125059 | Developer | `shared/study_planner/export.py` | `export_plan` function exporting JSON / Markdown via `--output`. |
+| 3 | Lý Tuấn Kiệt | 25125022 | Presenter, Dev | `shared/study_planner/README.md`, `docs/demo.md` | CLI documentation, sample datasets (`samples/`), presentation & demo guide. |
+| 4 | Nguyễn Minh Khang | 25125018 | QA/QC, Presenter | `tests/test_study_planner_e2e.py` | End-to-end test suite and CI maintenance. |
+| 5 | Trần Phúc Khánh | 25125020 | Security & Data | `shared/study_planner/errors.py` | Validation, `InfeasiblePlan` handling, clean exit code 1. |
+| 6 | Đặng Xuân Phát | 25125062 | UI/UX, QA/QC | `shared/study_planner/stats.py` | Allocation statistics via `Counter` and `defaultdict` (`--stats`). |

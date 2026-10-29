@@ -1,101 +1,101 @@
-# Kịch bản Demo & Báo cáo Thuyết trình: Study Planner CLI (Team T-W3)
+# Study Planner CLI — Live Demo & Presentation Guide (Team T-W3)
 
-- **Đề tài**: Tích hợp công cụ quản lý lịch học Study Planner CLI
-- **Nhóm thực hiện**: Team T-W3 (Team 07)
-- **Người thuyết trình (Presenter)**: Lý Tuấn Kiệt (MSSV: 25125022 — GitHub: `@kiethm07`)
-- **Tài liệu tham chiếu**: [shared/study_planner/README.md](../shared/study_planner/README.md)
-
----
-
-## 1. Mục tiêu bài thuyết trình
-
-1. Trình bày kiến trúc phần mềm hướng module hóa và quy trình tích hợp liên tục (CI/CD) của nhóm.
-2. Minh họa trực tiếp (Live Demo) hoạt động của CLI `shared.study_planner` trên terminal.
-3. Làm nổi bật các tính năng mở rộng:
-   - Phân bổ lịch học theo thuật toán tham lam (Greedy).
-   - Thống kê phân tích dữ liệu chuyên sâu với `Counter` và `defaultdict` (`--stats`).
-   - Khả năng xuất dữ liệu đa định dạng Markdown và JSON (`--output`).
-   - Xử lý lỗi an toàn không làm crash chương trình hoặc in stack trace ra người dùng.
+- **Project**: Study Planner CLI Integration
+- **Team**: Team T-W3 (Team 07)
+- **Presenter**: Lý Tuấn Kiệt (Student ID: 25125022 — GitHub: `@kiethm07`)
+- **Reference Documentation**: [shared/study_planner/README.md](../shared/study_planner/README.md)
 
 ---
 
-## 2. Kế hoạch Slides & Cấu trúc thời gian (15 phút)
+## 1. Presentation Objectives
 
-| Phần | Thời lượng | Nội dung chính | Người phụ trách / Slide |
+1. Demonstrate modular software architecture and continuous integration (CI/CD) practices.
+2. Deliver a live terminal demo of the `shared.study_planner` command-line application.
+3. Highlight core features:
+   - Greedy allocation and urgency-based prioritization.
+   - Deep statistical analysis using `Counter` and `defaultdict` (`--stats`).
+   - Multi-format file export to Markdown and JSON (`--output`).
+   - Robust error handling that exits cleanly without exposing Python tracebacks.
+
+---
+
+## 2. Presentation Agenda & Time Allocation (15 Minutes)
+
+| Section | Duration | Key Topics | Presenter Activity |
 | :---: | :---: | :--- | :--- |
-| **Phần 1** | 2 phút | Giới thiệu thành viên, bảng phân công nhiệm vụ và mục tiêu sản phẩm. | Slide 1 – 2 |
-| **Phần 2** | 3 phút | Kiến trúc Pipeline dữ liệu, hợp đồng dữ liệu (`Task`, `Block`) và cơ chế tích hợp. | Slide 3 – 4 |
-| **Phần 3** | 6 phút | **Live Demo CLI**: Thực thi 5 kịch bản thực tế trên terminal. | Live Terminal |
-| **Phần 4** | 2 phút | Đảm bảo chất lượng (QA/QC): Kết quả kiểm thử E2E và linter tự động trên CI. | Slide 5 |
-| **Phần 5** | 2 phút | Tổng kết và giải đáp thắc mắc (Q&A). | Slide 6 |
+| **Part 1** | 2 mins | Team introduction, role breakdown, and project goals. | Slides 1 – 2 |
+| **Part 2** | 3 mins | Pipeline architecture, data contracts (`Task`, `Block`), and integration flow. | Slides 3 – 4 |
+| **Part 3** | 6 mins | **Live Terminal Demo**: Executing 5 real-world usage scenarios. | Live Terminal |
+| **Part 4** | 2 mins | Quality Assurance (QA/QC): E2E test suite coverage and CI linting. | Slide 5 |
+| **Part 5** | 2 mins | Conclusion and Question & Answer (Q&A). | Slide 6 |
 
 ---
 
-## 3. Kịch bản Live Demo chi tiết từng bước (Step-by-Step Script)
+## 3. Step-by-Step Live Demo Script
 
-> **Lưu ý cho Presenter**: Đảm bảo mở terminal tại thư mục gốc của repository `python-bootcamp`.
+> **Presenter Tip**: Open terminal in the repository root directory `python-bootcamp`.
 
-### Bước chuẩn bị
+### Preparation
 ```bash
-# Kiểm tra môi trường và file mẫu
+# Verify environment and sample files
 git status
 ls samples/
 ```
 
 ---
 
-### Kịch bản 1: Thực thi cơ bản & thuật toán phân bổ (Basic Allocation)
-- **Mục đích**: Chứng minh khả năng đọc dữ liệu CSV, xếp thứ tự ưu tiên và phân bổ giờ học theo thuật toán tham lam.
-- **Lời dẫn Presenter**: *"Đầu tiên, chúng em chạy chương trình với file `samples/tasks.csv` và quỹ thời gian học là 8 giờ."*
-- **Lệnh thực thi**:
+### Scenario 1: Basic Study Allocation (Greedy Scheduling)
+- **Objective**: Demonstrate CSV parsing, task prioritization, and greedy hour allocation.
+- **Presenter Script**: *"First, we execute the planner on `samples/tasks.csv` with 8 available study hours."*
+- **Command**:
   ```bash
   python -m shared.study_planner samples/tasks.csv --hours 8
   ```
-- **Điểm nhấn cần giải thích**:
-  - Task `DS exam` có `importance=5` được ưu tiên xếp trước và phân bổ đủ 6.0 giờ.
-  - Task `Assignment` nhận 1.5 giờ còn lại.
-  - Tổng số giờ phân bổ là 7.5h / 8.0h khả dụng.
+- **Talking Points**:
+  - The high-priority task `DS exam` (`importance=5`) is scheduled first with its full 6.0 hours.
+  - The remaining 1.5 hours are allocated to `Assignment`.
+  - Total allocated hours: 7.5h / 8.0h available.
 
 ---
 
-### Kịch bản 2: Dữ liệu thực tế và tham số ngày mốc (`--today`)
-- **Mục đích**: Kiểm tra với bộ dữ liệu mở rộng (`samples/tasks_extended.csv`) gồm nhiều môn học, độ ưu tiên từ 1-5 và các hạn nộp khác nhau.
-- **Lời dẫn Presenter**: *"Với bộ dữ liệu thực tế gồm 7 môn học, chúng ta có thể truyền tham số `--today` để hệ thống tính toán số ngày còn lại đến deadline so với ngày chỉ định."*
-- **Lệnh thực thi**:
+### Scenario 2: Realistic Dataset & Reference Date (`--today`)
+- **Objective**: Test with the extended dataset (`samples/tasks_extended.csv`) containing 7 subjects, varied priorities (1–5), and distinct deadlines.
+- **Presenter Script**: *"Using our extended dataset, we can provide a custom reference date `--today` to calculate urgency dynamically relative to that date."*
+- **Command**:
   ```bash
   python -m shared.study_planner samples/tasks_extended.csv --hours 12 --today 2026-10-28
   ```
-- **Điểm nhấn cần giải thích**:
-  - Những môn thi gần ngày 2026-10-28 và có `importance=5` được xếp lên đầu bảng.
-  - Các môn có deadline xa hoặc độ quan trọng thấp hơn sẽ được xếp sau và cắt giảm nếu hết giờ.
+- **Talking Points**:
+  - Tasks closest to `2026-10-28` with `importance=5` take precedence.
+  - Tasks with distant deadlines or lower ratings are deprioritized or trimmed once hours are exhausted.
 
 ---
 
-### Kịch bản 3: Phân tích thống kê chuyên sâu (`--stats`)
-- **Mục đích**: Trình diễn tính năng thống kê phân bổ được xây dựng bằng `collections.Counter` và `collections.defaultdict`.
-- **Lời dẫn Presenter**: *"Khi người dùng muốn nắm tổng quan cơ cấu thời gian học tập, cờ `--stats` sẽ tổng hợp tỷ lệ phần trăm theo từng mức độ quan trọng."*
-- **Lệnh thực thi**:
+### Scenario 3: Allocation Statistics (`--stats`)
+- **Objective**: Showcase metrics aggregation powered by `collections.Counter` and `collections.defaultdict`.
+- **Presenter Script**: *"When students need insight into how their study time is distributed, the `--stats` flag aggregates total hours and percentage share by importance level."*
+- **Command**:
   ```bash
   python -m shared.study_planner samples/tasks_extended.csv --hours 10 --stats
   ```
-- **Kết quả quan sát**:
-  - Hiển thị môn học chiếm nhiều thời gian nhất (Top Task).
-  - Tỷ trọng thời gian phân bổ cho Level 5, Level 4... kèm phần trăm tương ứng.
+- **Observed Output**:
+  - Identifies the Top Task consuming the most study time.
+  - Percentage and block count breakdown across importance levels 5 down to 1.
 
 ---
 
-### Kịch bản 4: Xuất kế hoạch ra Markdown & JSON (`--output`)
-- **Mục đích**: Minh họa khả năng tương thích của kết quả đầu ra với các hệ thống khác hoặc ghi chú cá nhân.
-- **Lời dẫn Presenter**: *"Kết quả học tập có thể được xuất trực tiếp ra Markdown để đưa vào Obsidian/Notion hoặc file JSON để truyền vào API khác."*
-- **Lệnh thực thi**:
+### Scenario 4: Exporting Plan to Markdown & JSON (`--output`)
+- **Objective**: Demonstrate interoperability with external note-taking tools and data services.
+- **Presenter Script**: *"Study schedules can be directly exported to Markdown for personal notes (e.g., Notion/Obsidian) or JSON for external API consumption."*
+- **Command**:
   ```bash
-  # 1. Xuất ra Markdown
+  # 1. Export to Markdown table
   python -m shared.study_planner samples/tasks_extended.csv --hours 8 --output output/demo_plan.md
 
-  # 2. Xuất ra JSON
+  # 2. Export to structured JSON
   python -m shared.study_planner samples/tasks_extended.csv --hours 8 --output output/demo_plan.json
   ```
-- **Kiểm tra file xuất**:
+- **Verify Exported Content**:
   ```bash
   head -n 20 output/demo_plan.md
   head -n 25 output/demo_plan.json
@@ -103,49 +103,48 @@ ls samples/
 
 ---
 
-### Kịch bản 5: Xử lý ngoại lệ an toàn (Graceful Error Handling)
-- **Mục đích**: Chứng minh hệ thống xử lý lỗi sạch, trả về exit code `1` và không làm lộ Python traceback khó chịu cho người dùng.
-- **Lời dẫn Presenter**: *"Tính năng bảo vệ dữ liệu và xử lý lỗi được thiết kế để bắt mọi tình huống đầu vào sai lệch."*
+### Scenario 5: Graceful Error Handling
+- **Objective**: Verify that user input errors fail gracefully with exit code `1` and clean messages without tracebacks.
+- **Presenter Script**: *"Robust input validation guarantees an intuitive user experience even under improper usage."*
 
-1. **Trường hợp file không tồn tại**:
+1. **Missing Input File**:
    ```bash
    python -m shared.study_planner samples/nonexistent.csv --hours 4
-   # Kỳ vọng: Thông báo lỗi rõ ràng, exit code 1
+   # Expected: Clean file-not-found error message, exit code 1
    ```
-2. **Trường hợp dữ liệu CSV bị lỗi định dạng (`tasks_bad.csv`)**:
+2. **Malformed CSV Data (`tasks_bad.csv`)**:
    ```bash
    python -m shared.study_planner samples/tasks_bad.csv --hours 4
-   # Kỳ vọng: Báo lỗi định dạng dòng dữ liệu mà không văng traceback
+   # Expected: Clear row parsing error without stack trace
    ```
-3. **Trường hợp tham số số giờ không hợp lệ**:
+3. **Invalid Study Hours**:
    ```bash
    python -m shared.study_planner samples/tasks.csv --hours -5
-   # Kỳ vọng: Báo lỗi số giờ phải lớn hơn 0
+   # Expected: Non-zero exit code with positive hours constraint message
    ```
 
 ---
 
-### Kịch bản 6: Xác thực kiểm thử End-to-End & Code Style
-- **Mục đích**: Khẳng định độ tin cậy của phần mềm thông qua bộ kiểm thử tự động.
-- **Lệnh thực thi**:
+### Scenario 6: Automated End-to-End Testing & Code Quality
+- **Objective**: Confirm software stability through automated test suites and linting.
+- **Commands**:
   ```bash
-  # Chạy bộ test tích hợp E2E
+  # Run End-to-End integration test suite
   pytest -q tests/test_study_planner_e2e.py
 
-  # Kiểm tra chuẩn linter
+  # Run code quality linter
   ruff check shared/study_planner
   ```
 
 ---
 
-## 4. Chuẩn bị câu hỏi phản biện & Giải đáp (Q&A Preparation)
+## 4. Q&A Defense & Anticipated Questions
 
-### Câu hỏi 1: Vì sao nhóm sử dụng thuật toán Tham lam (Greedy) cho `allocate`?
-- **Trả lời**: Bài toán phân bổ giờ học theo độ ưu tiên giảm dần tương tự bài toán Fractional Knapsack. Thuật toán tham lam cho độ phức tạp thời gian tối ưu $\mathcal{O}(N \log N)$ (do bước sắp xếp), dễ kiểm thử và rất trực quan với người dùng thực tế: luôn dồn toàn lực cho việc khẩn cấp/quan trọng nhất trước.
+### Question 1: Why did the team choose a Greedy approach for `allocate`?
+- **Answer**: The allocation problem naturally maps to the Fractional Knapsack model where items are ranked by benefit-to-weight ratio. Greedy allocation runs in $\mathcal{O}(N \log N)$ time (dominated by sorting), making it fast, deterministic, and intuitive for users.
 
-### Câu hỏi 2: Cơ chế chia tách module giúp ích gì cho làm việc nhóm?
-- **Trả lời**: Mỗi thành viên phụ trách một module với giao diện hợp đồng (`shared.contract.Task`, `Block`) được xác định trước. Do đó, các thành viên có thể viết code và unit test độc lập mà không xảy ra xung đột (merge conflicts), trước khi Lead xâu chuỗi tại `__main__.py`.
+### Question 2: How did component modularity benefit team collaboration?
+- **Answer**: Each member worked against shared data contracts (`shared.contract.Task`, `Block`). This decoupled development and testing, allowing all 6 members to build and test their modules concurrently without merge conflicts before final CLI assembly in `__main__.py`.
 
-### Câu hỏi 3: Nếu deadline của một công việc đã qua so với `--today` thì sao?
-- **Trả lời**: Module `prioritise` tính toán `days_left`. Nếu deadline đã qua (`days_left < 0`), công việc vẫn được ghi nhận nhưng chuyển vào danh sách cảnh báo `overdue_tasks` trong module `summary` để người học nắm bắt và xử lý gấp.
-
+### Question 3: How are overdue deadlines handled when `--today` is past the deadline?
+- **Answer**: The `prioritise` module computes `days_left`. When `days_left < 0`, the task is marked as overdue and flagged in the summary report so students can urgently address backlog tasks.
