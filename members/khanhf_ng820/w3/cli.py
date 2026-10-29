@@ -21,7 +21,9 @@ def _sort_key(task: Task, today: date) -> tuple[int, float]:
     return (0, task.importance / days_left)
 
 
-def build_schedule(tasks: list[Task], hours: float, today: date) -> list[tuple[str, float]]:
+def build_schedule(
+    tasks: list[Task], hours: float, today: date
+) -> list[tuple[str, float]]:
     """Prioritize and allocate available study hours across tasks."""
     if hours <= 0:
         return []
@@ -63,8 +65,15 @@ def main(argv: list[str] | None = None) -> None:
     """Entry point for the study planner CLI."""
     parser = argparse.ArgumentParser(description="Study planner command-line tool.")
     parser.add_argument("csv_path", type=Path, help="Path to tasks CSV file.")
-    parser.add_argument("--hours", type=float, required=True, help="Total available study hours.")
-    parser.add_argument("--today", type=str, default=None, help="Reference date YYYY-MM-DD (defaults to today).")
+    parser.add_argument(
+        "--hours", type=float, required=True, help="Total available study hours."
+    )
+    parser.add_argument(
+        "--today",
+        type=str,
+        default=None,
+        help="Reference date YYYY-MM-DD (defaults to today).",
+    )
 
     args = parser.parse_args(argv)
 
@@ -76,7 +85,9 @@ def main(argv: list[str] | None = None) -> None:
         try:
             today = date.fromisoformat(args.today)
         except ValueError:
-            sys.stderr.write(f"Error: Invalid date format for --today: '{args.today}'. Expected YYYY-MM-DD.\n")
+            sys.stderr.write(
+                f"Error: Invalid date format for --today: '{args.today}'. Expected YYYY-MM-DD.\n"
+            )
             sys.exit(1)
     else:
         today = date.today()
