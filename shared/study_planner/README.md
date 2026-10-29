@@ -1,6 +1,6 @@
 # Study Planner CLI (`shared.study_planner`)
 
-`shared.study_planner` is a modular Python CLI application and library designed to parse study tasks, prioritize deadlines, and greedily allocate available study hours into balanced blocks.
+`shared.study_planner` is a modular Python command-line interface (CLI) application and library designed to parse study tasks, evaluate priority rankings, and greedily allocate available study hours into balanced blocks.
 
 Developed and integrated by **Team T-W3** for the CSC10014 — Python Bootcamp course.
 
@@ -34,16 +34,17 @@ The application connects decoupled modules developed by team members into an end
           │                   │                   │
           ▼                   ▼                   ▼
 ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
-│  render (stdout) │ │  export (--output│ │  stats (--stats) │
+│  render (stdout) │ │ export (--output)│ │  stats (--stats) │
 │  ASCII table     │ │  Export to JSON  │ │  Counter &       │
-│  in terminal     │ │  or Markdown     │ │  defaultdict     │
+│  in terminal     │ │   or Markdown    │ │  defaultdict     │
 └──────────────────┘ └──────────────────┘ └──────────────────┘
 ```
 
-### Pipeline Stages:
-1. **`parse_csv(path)`**: Reads the CSV file and maps rows into `Task` dataclass instances.
+### Pipeline Stages
+
+1. **`parse_csv(path)`**: Reads the CSV file and maps each row into a `Task` dataclass instance.
 2. **`validate_tasks(tasks)`**: Validates task constraints (importance `1` to `5`, effort `> 0`).
-3. **`prioritise(tasks, today=None)`**: Ranks tasks based on importance and remaining days to deadline.
+3. **`prioritise(tasks, today=None)`**: Ranks tasks based on importance score and remaining days until deadline.
 4. **`allocate(tasks, available_hours)`**: Greedily schedules study hours into `Block` items according to priority order.
 5. **Output Handlers**:
    - **Terminal (Default)**: `render(blocks)` prints an aligned ASCII study schedule to stdout.
@@ -56,16 +57,18 @@ The application connects decoupled modules developed by team members into an end
 
 - **Python**: Version 3.10 or higher.
 - **Dependencies**: 100% Python Standard Library (`argparse`, `csv`, `datetime`, `json`, `collections`, `dataclasses`, `pathlib`).
-- Check your environment:
-  ```bash
-  python --version
-  ```
+
+Check your environment:
+
+```bash
+python --version
+```
 
 ---
 
 ## 3. Input CSV Specification
 
-The input tasks CSV file must include the following 4 required columns with header:
+The input tasks CSV file must include the following 4 required columns with a header row:
 
 | Column | Type | Constraints | Description |
 | :--- | :--- | :--- | :--- |
@@ -74,7 +77,8 @@ The input tasks CSV file must include the following 4 required columns with head
 | `effort_h` | `float` | Real number `> 0` | Estimated hours needed to complete |
 | `deadline` | `str` | ISO format `YYYY-MM-DD` | Due date of the task |
 
-### Example Input (`samples/tasks.csv`):
+### Example Input (`samples/tasks.csv`)
+
 ```csv
 title,importance,effort_h,deadline
 DS exam,5,6.0,2026-10-30
@@ -96,7 +100,7 @@ python -m shared.study_planner <csv_path> --hours <HOURS> [options]
 
 | Argument / Flag | Required | Default | Description |
 | :--- | :---: | :---: | :--- |
-| `csv_path` | **Yes** | *(None)* | Path to tasks CSV file (e.g. `samples/tasks.csv`). |
+| `csv_path` | **Yes** | *(None)* | Path to tasks CSV file (e.g., `samples/tasks.csv`). |
 | `--hours <float>` | **Yes** | *(None)* | Total available study hours to allocate (must be positive). |
 | `--today <YYYY-MM-DD>` | No | Current date | Reference date used to calculate urgency and days left. |
 | `--output <path>` | No | `None` | Output destination file. Format is inferred from `.json`, `.md`, or `.markdown`. |
@@ -107,11 +111,15 @@ python -m shared.study_planner <csv_path> --hours <HOURS> [options]
 ## 5. Common Usage Scenarios
 
 ### 5.1. Basic Allocation (Standard Output)
+
 Allocate 8 study hours and print the schedule:
+
 ```bash
 python -m shared.study_planner samples/tasks.csv --hours 8
 ```
-**Sample Output:**
+
+Sample output:
+
 ```text
 === Study Plan ===
 Available hours: 8.00 h
@@ -122,17 +130,23 @@ Total allocated: 7.50 h
 ```
 
 ### 5.2. Reference Date Flag (`--today`)
+
 Prioritize tasks relative to a custom baseline date:
+
 ```bash
 python -m shared.study_planner samples/tasks_extended.csv --hours 10 --today 2026-10-28
 ```
 
 ### 5.3. Display Allocation Statistics (`--stats`)
+
 View metric aggregation across importance levels:
+
 ```bash
 python -m shared.study_planner samples/tasks_extended.csv --hours 12 --stats
 ```
-**Sample Statistics Block:**
+
+Sample statistics block:
+
 ```text
 Study Plan Statistics:
   - Total Allocated: 12.0 h across 4 block(s)
@@ -143,11 +157,14 @@ Study Plan Statistics:
 ```
 
 ### 5.4. Export Plan to Markdown (`--output plan.md`)
+
 ```bash
 python -m shared.study_planner samples/tasks.csv --hours 6 --output output/my_plan.md
 ```
+
 Automatically generates parent folders and writes standard Markdown:
-```markdown
+
+```text
 # Study Plan
 
 Total allocated: **6 h** across **2** block(s).
@@ -158,10 +175,13 @@ Total allocated: **6 h** across **2** block(s).
 ```
 
 ### 5.5. Export Plan to JSON (`--output plan.json`)
+
 ```bash
 python -m shared.study_planner samples/tasks.csv --hours 6 --output output/my_plan.json
 ```
+
 JSON file structure:
+
 ```json
 {
   "total_hours": 6.0,
