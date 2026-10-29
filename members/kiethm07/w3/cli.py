@@ -113,7 +113,7 @@ def main(argv: list[str] | None = None) -> None:
 
     try:
         tasks = load_tasks(args.csv_path)
-    except Exception as exc:
+    except (ValueError, OSError) as exc:
         sys.stderr.write(f"Error loading tasks from '{args.csv_path}': {exc}\n")
         sys.exit(1)
 
@@ -123,3 +123,4 @@ def main(argv: list[str] | None = None) -> None:
 
 if __name__ == "__main__":
     main()
+
