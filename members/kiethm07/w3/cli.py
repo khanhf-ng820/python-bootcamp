@@ -37,9 +37,7 @@ def build_schedule(
     if hours <= 0:
         return []
 
-    sorted_tasks = sorted(
-        tasks, key=lambda t: _urgency_key(t, ref_date), reverse=True
-    )
+    sorted_tasks = sorted(tasks, key=lambda t: _urgency_key(t, ref_date), reverse=True)
     allocated: list[tuple[str, float]] = []
     remaining = float(hours)
 
@@ -123,4 +121,3 @@ def main(argv: list[str] | None = None) -> None:
 
 if __name__ == "__main__":
     main()
-
