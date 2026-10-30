@@ -1,6 +1,7 @@
 """Command-line interface for the shared Study Planner (Team T-W3)."""
 
 import argparse
+import csv
 import sys
 from datetime import date
 from pathlib import Path
@@ -10,6 +11,18 @@ from shared.study_planner.parse import parse_csv
 from shared.study_planner.prioritise import prioritise
 from shared.study_planner.render import render
 from shared.study_planner.summary import summarise
+
+try:
+    from shared.study_planner.errors import InfeasiblePlan
+
+    _EXPECTED_ERRORS: tuple[type[Exception], ...] = (
+        ValueError,
+        OSError,
+        csv.Error,
+        InfeasiblePlan,
+    )
+except ImportError:
+    _EXPECTED_ERRORS = (ValueError, OSError, csv.Error)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -67,19 +80,18 @@ def main(argv: list[str] | None = None) -> None:
 
     try:
         tasks = parse_csv(args.csv_path)
-    except (ValueError, OSError) as exc:
-        sys.stderr.write(f"Error: Failed to parse CSV '{args.csv_path}': {exc}\n")
-        sys.exit(1)
+        if not tasks:
+            sys.stderr.write(f"Error: CSV file '{args.csv_path}' contains no tasks.\n")
+            sys.exit(1)
 
-    if not tasks:
-        sys.stderr.write(f"Error: CSV file '{args.csv_path}' contains no tasks.\n")
+        prioritized = prioritise(tasks, today)
+        blocks = allocate(prioritized, args.hours)
+        summary_data = summarise(tasks, blocks) if args.summary else None
+        output = render(blocks, summary_data)
+        print(output)
+    except _EXPECTED_ERRORS as exc:
+        sys.stderr.write(f"Error: {exc}\n")
         sys.exit(1)
-
-    prioritized = prioritise(tasks, today)
-    blocks = allocate(prioritized, args.hours)
-    summary_data = summarise(tasks, blocks) if args.summary else None
-    output = render(blocks, summary_data)
-    print(output)
 
 
 if __name__ == "__main__":

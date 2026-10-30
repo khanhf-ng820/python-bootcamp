@@ -8,7 +8,7 @@ BOOTCAMP = Path(__file__).resolve().parents[1]
 MODULE = "shared.study_planner"
 
 
-def run_cli(*args: str) -> subprocess.CompletedProcess[str]:
+def run_cli(*args: str, timeout: float = 10.0) -> subprocess.CompletedProcess[str]:
     """Execute the study planner CLI module as a subprocess."""
     return subprocess.run(
         [sys.executable, "-m", MODULE, *args],
@@ -16,6 +16,7 @@ def run_cli(*args: str) -> subprocess.CompletedProcess[str]:
         capture_output=True,
         text=True,
         check=False,
+        timeout=timeout,
     )
 
 
@@ -70,6 +71,20 @@ def test_cli_invalid_csv(tmp_path: Path) -> None:
 
     assert res.returncode == 1
     assert "Traceback" not in res.stderr
+
+
+def test_cli_negative_effort_csv(tmp_path: Path) -> None:
+    """A CSV row with negative effort should exit with code 1 without a traceback."""
+    bad_csv = tmp_path / "negative_effort.csv"
+    bad_csv.write_text(
+        "title,importance,effort_h,deadline\nExam,5,-1,2026-11-01\n",
+        encoding="utf-8",
+    )
+    res = run_cli(str(bad_csv), "--hours", "2")
+
+    assert res.returncode == 1
+    assert "Traceback" not in res.stderr
+    assert "cannot be negative" in res.stderr.lower()
 
 
 def test_cli_negative_hours() -> None:
