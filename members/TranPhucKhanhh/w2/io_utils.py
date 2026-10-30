@@ -1,4 +1,5 @@
 """W2-2: Load tasks from CSV and save them as JSON."""
+
 import csv
 import json
 from datetime import date
@@ -8,6 +9,7 @@ from .models import Task
 
 
 def load_tasks(path: str | Path) -> list[Task]:
+    """Read task CSV data, reporting invalid input with its line number."""
     tasks = []
     with Path(path).open(encoding="utf-8", newline="") as stream:
         reader = csv.reader(stream, strict=True)
@@ -17,10 +19,14 @@ def load_tasks(path: str | Path) -> list[Task]:
             for row in reader:
                 try:
                     title, importance, effort_h, deadline = row
-                    tasks.append(Task(
-                        title, int(importance), float(effort_h),
-                        date.fromisoformat(deadline),
-                    ))
+                    tasks.append(
+                        Task(
+                            title,
+                            int(importance),
+                            float(effort_h),
+                            date.fromisoformat(deadline),
+                        )
+                    )
                 except ValueError as exc:
                     raise ValueError(f"line {reader.line_num}: {exc}") from exc
         except csv.Error as exc:
@@ -29,9 +35,14 @@ def load_tasks(path: str | Path) -> list[Task]:
 
 
 def save_json(tasks: list[Task], path: str | Path) -> None:
+    """Write tasks as UTF-8 JSON with ISO-format deadlines."""
     records = [
-        {"title": task.title, "importance": task.importance,
-         "effort_h": task.effort_h, "deadline": task.deadline.isoformat()}
+        {
+            "title": task.title,
+            "importance": task.importance,
+            "effort_h": task.effort_h,
+            "deadline": task.deadline.isoformat(),
+        }
         for task in tasks
     ]
     with Path(path).open("w", encoding="utf-8") as stream:

@@ -1,10 +1,12 @@
 """W2-5: Run with python -m members.TranPhucKhanhh.w2."""
+
 from pathlib import Path
 
 from .io_utils import load_tasks
 
 
 def main() -> None:
+    """Load and print the repository sample task CSV."""
     path = Path(__file__).resolve().parents[3] / "samples" / "tasks.csv"
     for task in load_tasks(path):
         print(task)
