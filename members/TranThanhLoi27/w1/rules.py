@@ -10,14 +10,14 @@ def can_register_thesis(credits: int, gpa: float) -> bool:
     return credits >= 120 and gpa >= 2.0
 
 
-def missing(credits, gpa) -> list[str]:
+def missing(credits: int, gpa: float) -> list[str]:
     """Return a message for each unmet thesis registration requirement.
 
     Start with an empty list, append the credit shortfall when credits are
     below 120, append the GPA shortfall when GPA is below 2.0, and return the
     collected messages.
     """
-    reasons = []
+    reasons: list[str] = []
     if credits < 120:
         reasons.append(f"need {120 - credits} more credits")
 

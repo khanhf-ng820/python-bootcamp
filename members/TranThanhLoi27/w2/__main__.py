@@ -1,3 +1,5 @@
+"""Load a tasks CSV file and print each task (W2-5)."""
+
 import sys
 from pathlib import Path
 
@@ -16,6 +18,7 @@ DEFAULT_CSV = Path(__file__).resolve().parents[3] / "samples" / "tasks.csv"
 
 
 def main() -> int:
+    """Load tasks and print them, returning a process exit code."""
     # Use path from command line arguments if provided, otherwise fallback to default sample path
     if len(sys.argv) >= 2:
         csv_path = Path(sys.argv[1])

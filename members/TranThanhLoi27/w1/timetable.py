@@ -7,7 +7,7 @@ def by_day(courses: list[tuple[str, str]]) -> dict[str, list[str]]:
     Start with an empty mapping, add each course to the list for its day,
     sort every day's list, and return the mapping.
     """
-    result = {}
+    result: dict[str, list[str]] = {}
     for course, day in courses:
         result.setdefault(day, []).append(course)
 
