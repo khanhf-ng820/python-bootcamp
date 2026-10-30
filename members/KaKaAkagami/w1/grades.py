@@ -1,7 +1,8 @@
+"""Utilities for calculating grade statistics."""
+
 
 def summary(scores: list[float]) -> dict:
     """Return the min, max, mean, and median of a list of scores."""
-
     if not scores:
         raise ValueError("Scores list cannot be empty")
 

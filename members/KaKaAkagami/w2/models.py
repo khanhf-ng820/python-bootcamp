@@ -7,6 +7,8 @@ from datetime import date
 
 @dataclass
 class Task:
+    """Represent a study task with its scheduling attributes."""
+
     title: str
     importance: int
     effort_h: float

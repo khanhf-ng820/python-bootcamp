@@ -1,3 +1,5 @@
+"""Utilities for processing text."""
+
 
 def word_count(text: str) -> dict[str, int]:
     """Count words ignoring case and basic punctuation."""

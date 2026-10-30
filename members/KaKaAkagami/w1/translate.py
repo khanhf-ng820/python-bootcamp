@@ -1,3 +1,5 @@
+"""Simple text translation utilities."""
+
 from math import isqrt
 
 

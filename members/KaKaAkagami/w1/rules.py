@@ -1,3 +1,5 @@
+"""Rule-based response utilities."""
+
 
 def can_register_thesis(credits: int, gpa: float) -> bool:
     """Check if a student is eligible to register for a thesis."""
